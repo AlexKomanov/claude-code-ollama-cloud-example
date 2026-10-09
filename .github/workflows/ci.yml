@@ -1,0 +1,64 @@
+# Runs the Playwright e2e suite and publishes the HTML report to GitHub Pages.
+# The report is deployed even when tests fail (`!cancelled()`), so failures are
+# always browsable at the Pages URL.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One Pages deployment at a time; later runs wait rather than cancel an
+# in-flight report upload.
+concurrency:
+  group: pages
+
+jobs:
+  test-and-publish-report:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The suite deliberately targets a single Chromium engine (chromium +
+      # mobile projects), so no other browser binary is needed.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # playwright.config.ts starts the dedicated test server on port 3100
+      # (MSW off) and retries tests twice in CI.
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ !cancelled() }}
+        with:
+          path: playwright-report
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        if: ${{ !cancelled() }}
+
+      - name: Upload failure videos and traces
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 7
