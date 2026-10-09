@@ -2,6 +2,8 @@
 
 A high-performance, frontend-only Kanban board implementation built with Next.js, React 19, and TypeScript.
 
+[![CI](https://github.com/AlexKomanov/claude-code-ollama-cloud-example/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexKomanov/claude-code-ollama-cloud-example/actions/workflows/ci.yml) · **Playwright report**: https://alexkomanov.github.io/claude-code-ollama-cloud-example/
+
 ## 🚀 Tech Stack
 - **Framework**: Next.js 16 (App Router)
 - **UI**: React 19, Tailwind CSS, shadcn/ui
@@ -41,7 +43,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - \`src/types\`: Centralized TypeScript interfaces for the entire system.
 
 ## 🧪 Testing
-The system is designed for E2E testing with Playwright.
+The system is designed for E2E testing with Playwright, split into two suites:
 \`\`\`bash
-npx playwright test
+npm run test:e2e:api       # API-only tests (no browser, no screenshots)
+npm run test:e2e:browser   # UI tests in Chromium (chromium + mobile projects)
+npm run test:e2e           # both of the above
 \`\`\`
+
+CI (GitHub Actions) runs both suites and publishes the merged HTML report to
+GitHub Pages: https://alexkomanov.github.io/claude-code-ollama-cloud-example/

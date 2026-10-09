@@ -10,13 +10,23 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("LP-01: load landing page", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Welcome to Ticketing" })).toBeVisible();
-  await expect(page.getByTestId("enter-dashboard")).toBeVisible();
+  await test.step("open the landing page", async () => {
+    await page.goto("/");
+  });
+  await test.step("hero heading and the Enter Dashboard CTA are visible", async () => {
+    await expect(page.getByRole("heading", { name: "Welcome to Ticketing" })).toBeVisible();
+    await expect(page.getByTestId("enter-dashboard")).toBeVisible();
+  });
 });
 
 test("LP-02: click Enter Dashboard navigates to boards", async ({ page }) => {
-  await page.goto("/");
-  await page.getByTestId("enter-dashboard").click();
-  await expect(page).toHaveURL(/\/boards$/);
+  await test.step("open the landing page", async () => {
+    await page.goto("/");
+  });
+  await test.step("click the Enter Dashboard CTA", async () => {
+    await page.getByTestId("enter-dashboard").click();
+  });
+  await test.step("lands on /boards", async () => {
+    await expect(page).toHaveURL(/\/boards$/);
+  });
 });

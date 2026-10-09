@@ -41,10 +41,30 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      # playwright.config.ts starts the dedicated test server on port 3100
-      # (MSW off) and retries tests twice in CI.
-      - name: Run Playwright tests
-        run: npx playwright test
+      # Two configs: the API-only suite never launches a browser (request
+      # fixture only, screenshots off); the UI suite runs Chromium. Each run
+      # writes a blob report (both are named report.zip, so their dirs are
+      # kept separate) that gets copied into blob-reports/all for the merge.
+      - name: Run Playwright API tests (no browser)
+        run: |
+          mkdir -p blob-reports/all
+          npx playwright test --config playwright.api.config.ts
+          cp blob-reports/api/report.zip blob-reports/all/api.zip
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: blob-reports/api
+
+      - name: Run Playwright UI tests
+        run: |
+          npx playwright test --config playwright.config.ts
+          cp blob-reports/ui/report.zip blob-reports/all/ui.zip
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: blob-reports/ui
+
+      - name: Merge blob reports into one HTML report
+        run: npx playwright merge-reports --reporter html blob-reports/all
+        env:
+          PLAYWRIGHT_HTML_OUTPUT: playwright-report
+        if: ${{ !cancelled() }}
 
       - uses: actions/upload-pages-artifact@v3
         if: ${{ !cancelled() }}

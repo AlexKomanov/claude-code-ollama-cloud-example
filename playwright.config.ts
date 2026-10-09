@@ -1,7 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
+/**
+ * UI (browser) config: everything except e2e/api.spec.ts — the API-only specs
+ * live under playwright.api.config.ts (`npm run test:e2e:api`) so they never
+ * launch a browser.
+ */
 export default defineConfig({
   testDir: "./e2e",
+  // The API-only suite runs with its own config (and no browser).
+  testIgnore: "**/api.spec.ts",
   // The mock store is process-global on the test server (no per-test reset),
   // so tests run serially for deterministic state.
   fullyParallel: false,
@@ -17,7 +24,11 @@ export default defineConfig({
   },
   outputDir: "test-results/",
   // HTML report alongside the terminal list (view with `npx playwright show-report`).
-  reporter: [["list"], ["html", { open: "never" }]],
+  // In CI both configs run with the blob reporter and merge-reports produces
+  // one combined HTML report for the GitHub Pages publish.
+  reporter: process.env.CI
+    ? [["list"], ["blob"]]
+    : [["list"], ["html", { open: "never" }]],
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     {
