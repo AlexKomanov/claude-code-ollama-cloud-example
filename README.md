@@ -43,12 +43,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - \`src/types\`: Centralized TypeScript interfaces for the entire system.
 
 ## 🧪 Testing
-The system is designed for E2E testing with Playwright, split into two suites:
+The system is designed for E2E testing with Playwright — one config, three projects:
 \`\`\`bash
+npm run test:e2e           # everything (api + chromium + mobile projects)
 npm run test:e2e:api       # API-only tests (no browser, no screenshots)
-npm run test:e2e:browser   # UI tests in Chromium (chromium + mobile projects)
-npm run test:e2e           # both of the above
+npm run test:e2e:browser   # UI tests in Chromium (desktop + mobile emulation)
 \`\`\`
-
-CI (GitHub Actions) runs both suites and publishes the merged HTML report to
+CI (GitHub Actions) runs the suite and publishes the HTML report to
 GitHub Pages: https://alexkomanov.github.io/claude-code-ollama-cloud-example/

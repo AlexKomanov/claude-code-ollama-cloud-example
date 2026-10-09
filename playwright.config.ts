@@ -1,14 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * UI (browser) config: everything except e2e/api.spec.ts — the API-only specs
- * live under playwright.api.config.ts (`npm run test:e2e:api`) so they never
- * launch a browser.
+ * One config, three projects:
+ * - `api` — request-fixture tests only, no browser, no screenshot/video
+ * - `chromium` / `mobile` — the UI suite on two viewport variants
+ *
+ * Scripts: `npm run test:e2e` (all), `npm run test:e2e:api`, `npm run test:e2e:browser`.
  */
 export default defineConfig({
   testDir: "./e2e",
-  // The API-only suite runs with its own config (and no browser).
-  testIgnore: "**/api.spec.ts",
   // The mock store is process-global on the test server (no per-test reset),
   // so tests run serially for deterministic state.
   fullyParallel: false,
@@ -24,18 +24,22 @@ export default defineConfig({
   },
   outputDir: "test-results/",
   // HTML report alongside the terminal list (view with `npx playwright show-report`).
-  // In CI both configs run with the blob reporter and merge-reports produces
-  // one combined HTML report for the GitHub Pages publish.
-  reporter: process.env.CI
-    ? [["list"], ["blob"]]
-    : [["list"], ["html", { open: "never" }]],
+  reporter: [["list"], ["html", { open: "never" }]],
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    {
+      // Pure API tests: only the `request` fixture, so no browser context (and
+      // therefore no blank-page screenshots) is ever created.
+      name: "api",
+      testMatch: "**/api.spec.ts",
+      use: { screenshot: "off", video: "off", trace: "retain-on-failure" },
+    },
+    { name: "chromium", testIgnore: "**/api.spec.ts", use: { ...devices["Desktop Chrome"] } },
     {
       // iPhone 17 Pro Max viewport/touch emulation on the Chromium engine: real
       // iPhone descriptors force WebKit (Safari's engine; iOS devices can only
       // run WebKit), but the suite targets a single Chromium engine per user.
       name: "mobile",
+      testIgnore: "**/api.spec.ts",
       use: { ...devices["iPhone 17 Pro Max"], browserName: "chromium", defaultBrowserType: "chromium" },
     },
   ],

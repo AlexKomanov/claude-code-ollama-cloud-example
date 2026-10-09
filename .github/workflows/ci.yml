@@ -1,6 +1,6 @@
-# Runs the Playwright e2e suite and publishes the HTML report to GitHub Pages.
-# The report is deployed even when tests fail (`!cancelled()`), so failures are
-# always browsable at the Pages URL.
+# Runs the Playwright e2e suite (api/chromium/mobile projects) and publishes
+# the HTML report to GitHub Pages. The report is deployed even when tests fail
+# (`!cancelled()`), so failures are always browsable at the Pages URL.
 name: CI
 
 on:
@@ -36,35 +36,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The suite deliberately targets a single Chromium engine (chromium +
+      # The suite deliberately targets a single Chromium engine (api/chromium/
       # mobile projects), so no other browser binary is needed.
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      # Two configs: the API-only suite never launches a browser (request
-      # fixture only, screenshots off); the UI suite runs Chromium. Each run
-      # writes a blob report (both are named report.zip, so their dirs are
-      # kept separate) that gets copied into blob-reports/all for the merge.
-      - name: Run Playwright API tests (no browser)
-        run: |
-          mkdir -p blob-reports/all
-          npx playwright test --config playwright.api.config.ts
-          cp blob-reports/api/report.zip blob-reports/all/api.zip
-        env:
-          PLAYWRIGHT_BLOB_OUTPUT_DIR: blob-reports/api
-
-      - name: Run Playwright UI tests
-        run: |
-          npx playwright test --config playwright.config.ts
-          cp blob-reports/ui/report.zip blob-reports/all/ui.zip
-        env:
-          PLAYWRIGHT_BLOB_OUTPUT_DIR: blob-reports/ui
-
-      - name: Merge blob reports into one HTML report
-        run: npx playwright merge-reports --reporter html blob-reports/all
-        env:
-          PLAYWRIGHT_HTML_OUTPUT: playwright-report
-        if: ${{ !cancelled() }}
+      # playwright.config.ts starts the dedicated test server on port 3100
+      # (MSW off) and retries tests twice in CI. The `api` project tests run
+      # request-only (no browser); the html reporter writes one combined
+      # report for all projects.
+      - name: Run Playwright tests
+        run: npx playwright test
 
       - uses: actions/upload-pages-artifact@v3
         if: ${{ !cancelled() }}

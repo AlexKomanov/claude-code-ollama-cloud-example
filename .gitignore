@@ -29,7 +29,6 @@
 .playwright-cli/
 playwright-report/
 test-results/
-blob-reports/
 boards-main.yml
 
 # debug
