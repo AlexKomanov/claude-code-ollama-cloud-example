@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trello-Style Ticketing System
 
-## Getting Started
+A high-performance, frontend-only Kanban board implementation built with Next.js, React 19, and TypeScript.
 
-First, run the development server:
+## 🚀 Tech Stack
+- **Framework**: Next.js 16 (App Router)
+- **UI**: React 19, Tailwind CSS, shadcn/ui
+- **State Management**: Zustand
+- **Drag & Drop**: @dnd-kit
+- **API Mocking**: MSW (Mock Service Worker)
+- **Realtime**: Socket.io-client
+- **Validation**: Zod & React Hook Form
 
-```bash
+## ✨ Key Features
+- **Multiple Boards**: Create and manage separate project boards.
+- **Full Kanban Flow**: Drag-and-drop tasks across customizable columns.
+- **Realtime Sync**: Socket.io integration for presence and task updates.
+- **Detailed Task Management**: Modals for editing descriptions, checklists, and comments.
+- **Advanced Filtering**: Search and filter tasks by priority, assignee, and text.
+- **Role-Based Access**: Admin vs. Member permissions for board and task management.
+- **Responsive Design**: Optimized for desktop, tablet, and mobile.
+
+## 🛠️ Getting Started
+
+### Installation
+\`\`\`bash
+npm install
+\`\`\`
+
+### Running the App
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏗️ Architecture
+- \`src/app\`: Next.js App Router pages and layouts.
+- \`src/components\`: UI components divided into \`ui\`, \`board\`, \`task\`, and \`shared\`.
+- \`src/lib/stores\`: Zustand stores for Users, Boards, and Sockets.
+- \`src/lib/mocks\`: MSW handlers and mock data for API simulation.
+- \`src/types\`: Centralized TypeScript interfaces for the entire system.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧪 Testing
+The system is designed for E2E testing with Playwright.
+\`\`\`bash
+npx playwright test
+\`\`\`
